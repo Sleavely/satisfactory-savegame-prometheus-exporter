@@ -36,5 +36,7 @@ export const loadLocation = async (location: string): Promise<ArrayBuffer> => {
     if (LOG_LEVEL === 'debug') console.log(`Reading savefile from ${localPath}`)
   }
 
-  return (await readFile(resolve(localPath))).buffer
+  const buffer = await readFile(resolve(localPath))
+  // Convert Buffer to proper ArrayBuffer (Buffer.buffer can have offset issues)
+  return new Uint8Array(buffer).buffer
 }

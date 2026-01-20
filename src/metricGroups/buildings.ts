@@ -29,9 +29,13 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
   if (object.typePath === '/Script/FactoryGame.FGLightweightBuildableSubsystem') {
     if (isBuildableSubsystemSpecialProperties(object.specialProperties)) {
       for (const buildable of object.specialProperties.buildables) {
+        // Skip buildables without a valid typeReference path
+        const typePath = buildable.typeReference?.pathName
+        if (!typePath) continue
+
         // Because there are so many variations of walls and foundations, we group them.
         // E.g. '/Game/FactoryGame/Buildable/Building/Wall/FicsitWallSet/Build_Wall_Orange_8x1.Build_Wall_Orange_8x1_C'
-        const category = buildable.typePath.split('/')[5]
+        const category = typePath.split('/')[5] ?? 'Unknown'
         metrics.getGauge('lightweight_total').inc({ building: category }, buildable.instances.length)
       }
     }
