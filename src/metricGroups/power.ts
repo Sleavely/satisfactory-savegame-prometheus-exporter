@@ -32,6 +32,11 @@ const metrics = new MetricGroup('satisfactory_savegame_power')
     'World-wide power consumption in MW',
   )
   .addGauge(
+    'capacity_megawatts',
+    'World-wide power capacity in MW',
+    ['building'],
+  )
+  .addGauge(
     'storage_megawatthours',
     'Total amount of MWh remaining in all batteries',
   )
@@ -76,6 +81,8 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
     if ((powerInfo.properties?.mDynamicProductionCapacity as FloatProperty)?.value) {
       metrics.getGauge('production_megawatts').inc({ building: building.name }, (powerInfo.properties?.mDynamicProductionCapacity as FloatProperty).value)
     }
+    // Regardless of whether its currently producing, we count it toward capacity
+    metrics.getGauge('capacity_megawatts').inc({ building: building.name }, generator.powerProduction)
   }
 
   if (object.typePath === '/Script/FactoryGame.FGPowerCircuit') {

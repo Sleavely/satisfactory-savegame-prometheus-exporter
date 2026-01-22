@@ -25,7 +25,7 @@ const pathToClassName = (path: string): string => {
 }
 
 export const pathToBuilding = (path: string): Building => {
-  return staticData.buildings[pathToClassName(path) as keyof Generators]
+  return staticData.buildings[pathToClassName(path)]
 }
 
 export const pathToGenerator = (path: string): DescGenerator => {
