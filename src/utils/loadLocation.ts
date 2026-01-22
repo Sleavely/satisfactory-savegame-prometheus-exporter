@@ -23,6 +23,7 @@ const getLastModifiedFile = async (dir: string, recursive?: boolean, predicateFn
 export const loadLocation = async (location: string): Promise<ArrayBuffer> => {
   // Is it a URL?
   if (URL.canParse(location)) {
+    if (LOG_LEVEL === 'debug') console.log(`Reading savefile from ${location}`)
     return await fetch(location).then(async res => await res.arrayBuffer())
   }
 
