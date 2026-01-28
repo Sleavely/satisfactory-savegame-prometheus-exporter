@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.6.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.5.0...v2.6.0) (2026-01-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* The parser library v3.x has API changes that required updates:
+
+### Features
+
+* satisfactory_savegame_power_capacity_megawatts ([21ae745](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/21ae74567653b8aeffea2415a529dd15f8d8a653))
+
+
+### Bug Fixes
+
+* also debug log when location is a URL ([38ce601](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/38ce601c17cd06cba2f38b7c3849126e14ce3a1a))
+* substitute spline types missing in file parser ([78156a7](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/78156a75dc913d64e6767a14201f9ae9698a2c86))
+* Update to satisfactory-file-parser v3.3.0 ([d3851b9](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/d3851b99063d41f5ad62b1c7ce90a41c7e636d9a))
+* Update to satisfactory-file-parser v3.3.0 ([fa60c0a](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/fa60c0a0a46615fb1429622fe0437705d03ca8dd))
+
+
+### Miscellaneous Chores
+
+* release 2.6.0 ([5ead614](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/5ead6144738e70d42b9bf29df30fe893918e3667))
+
 ## [2.5.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.4.1...v2.5.0) (2025-01-17)
 
 

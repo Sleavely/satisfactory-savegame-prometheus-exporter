@@ -1,6 +1,6 @@
 {
   "name": "satisfactory-savegame-prometheus-exporter",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "A Prometheus exporter for savegame metrics from Satisfactory",
   "author": "Joakim Hedlund <contact@joakimhedlund.com>",
   "license": "MIT",
