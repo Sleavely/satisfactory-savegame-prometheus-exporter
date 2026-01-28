@@ -1,12 +1,14 @@
 import { MetricGroup } from './_MetricGroup'
 import { type Lookups } from '../types/lookups.type'
 import {
-  type ArrayProperty,
-  type StructProperty,
   type SaveComponent,
   type SaveEntity,
 } from '@etothepii/satisfactory-file-parser'
 import { getDistance } from '../utils/spatialMath'
+import {
+  type SplineArrayProperty,
+  type SplinePointProperty,
+} from '../types/splineArrayProperty.type'
 
 const metrics = new MetricGroup('satisfactory_savegame_trains')
   .addGauge(
@@ -37,8 +39,8 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
   }
 
   if (object.typePath.startsWith('/Game/FactoryGame/Buildable/Factory/Train/Track')) {
-    const { totalLength } = (object.properties?.mSplineData as ArrayProperty<StructProperty>)?.values
-      ?.reduce<{ totalLength: number, previousPoint: StructProperty | null }>(({ totalLength, previousPoint }, splinePoint) => {
+    const { totalLength } = (object.properties?.mSplineData as SplineArrayProperty)?.values
+      ?.reduce<{ totalLength: number, previousPoint: SplinePointProperty | null }>(({ totalLength, previousPoint }, splinePoint) => {
       return {
         totalLength: totalLength + (
           previousPoint

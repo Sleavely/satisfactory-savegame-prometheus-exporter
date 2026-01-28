@@ -1,13 +1,15 @@
 import { MetricGroup } from './_MetricGroup'
 import { type Lookups } from '../types/lookups.type'
 import {
-  type ArrayProperty,
-  type StructProperty,
   type SaveComponent,
   type SaveEntity,
 } from '@etothepii/satisfactory-file-parser'
 import { getDistance } from '../utils/spatialMath'
 import { pathToBuilding } from '../staticData/staticData'
+import {
+  type SplineArrayProperty,
+  type SplinePointProperty,
+} from '../types/splineArrayProperty.type'
 
 const metrics = new MetricGroup('satisfactory_savegame_pipes')
   .addGauge(
@@ -37,8 +39,8 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
 
     const mk = building.className.match(/mk(\d)/i)?.at(1) ?? '1'
 
-    const { totalLength: pipeLength } = (object.properties?.mSplineData as ArrayProperty<StructProperty>)?.values
-      ?.reduce<{ totalLength: number, previousPoint: StructProperty | null }>(({ totalLength, previousPoint }, splinePoint) => {
+    const { totalLength: pipeLength } = (object.properties?.mSplineData as SplineArrayProperty)?.values
+      ?.reduce<{ totalLength: number, previousPoint: SplinePointProperty | null }>(({ totalLength, previousPoint }, splinePoint) => {
       return {
         totalLength: totalLength + (
           previousPoint

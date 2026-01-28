@@ -1,8 +1,8 @@
 import { MetricGroup } from './_MetricGroup'
 import { type Lookups } from '../types/lookups.type'
 import {
-  type ArrayProperty,
   type Int32Property,
+  type Int64ArrayProperty,
   type SaveComponent,
   type SaveEntity,
 } from '@etothepii/satisfactory-file-parser'
@@ -16,12 +16,11 @@ const metrics = new MetricGroup('satisfactory_savegame_awesome')
     'printable',
     'AWESOME coupons that are currently printable',
   )
-
 /* eslint-disable no-useless-return */
 export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): void => {
   if (object.typePath === '/Script/FactoryGame.FGResourceSinkSubsystem') {
     // Total all-time, split by Standard and DNA
-    const mTotalPoints = (object?.properties?.mTotalPoints as ArrayProperty<string>)?.values?.map(s => parseInt(s, 10))
+    const mTotalPoints = (object?.properties?.mTotalPoints as Int64ArrayProperty)?.values?.map((s) => parseInt(s, 10))
     if (mTotalPoints) {
       metrics.getGauge('points').set(mTotalPoints.reduce((acc, value) => acc + value, 0))
     }
