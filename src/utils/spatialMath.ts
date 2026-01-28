@@ -1,10 +1,7 @@
-interface CoordinateObject {
-  x: number
-  y: number
-  z: number
-}
+import { type vec3 } from '@etothepii/satisfactory-file-parser'
+
 type CoordinateArray = [number, number, number]
-type AnyCoordinate = CoordinateObject | CoordinateArray
+type AnyCoordinate = vec3 | CoordinateArray
 
 /**
  * Calculates the straight distance between two points in 3D space. Does not account for curvature.

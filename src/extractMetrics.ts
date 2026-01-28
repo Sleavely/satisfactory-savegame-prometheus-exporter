@@ -24,7 +24,7 @@ export const extractMetrics = async (arrayBuffer: ArrayBuffer): Promise<Registry
   ])
 
   register.resetMetrics()
-  const save = Parser.ParseSave('MySave', new Uint8Array(arrayBuffer))
+  const save = Parser.ParseSave('MySave', arrayBuffer)
   register.setDefaultLabels({ sessionName: save.header.sessionName })
 
   const lookups = {
@@ -33,14 +33,14 @@ export const extractMetrics = async (arrayBuffer: ArrayBuffer): Promise<Registry
   } as const
 
   // Build lookup maps in an initial pass
-  for (const level of save.levels) {
+  for (const level of Object.values(save.levels)) {
     for (const object of level.objects) {
       lookups.byType.set(object.typePath, object)
       lookups.byInstance.set(object.instanceName, object)
     }
   }
 
-  for (const level of save.levels) {
+  for (const level of Object.values(save.levels)) {
     for (const object of level.objects) {
       awesomeParser(object, lookups)
       buildingsParser(object, lookups)
