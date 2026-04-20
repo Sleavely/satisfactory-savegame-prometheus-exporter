@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.6.0...v2.7.0) (2026-04-20)
+
+
+### Features
+
+* support for 1.1 and 1.2 ([3c96e1c](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/3c96e1c86d15b8ef9b450c56a961ac8c2b472462))
+
 ## [2.6.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.5.0...v2.6.0) (2026-01-28)
 
 
