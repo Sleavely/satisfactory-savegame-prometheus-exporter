@@ -7,17 +7,13 @@ import {
 interface Vec3StructProperty extends StructProperty {
   value: vec3
 }
-interface SplinePointData {
-  type: 'SplinePointData'
+export interface SplinePointValue extends StructProperty {
   properties: {
     Location: Vec3StructProperty
     ArriveTangent: Vec3StructProperty
     LeaveTangent: Vec3StructProperty
   }
 }
-export interface SplinePointProperty extends StructProperty {
-  value: SplinePointData
-}
 export interface SplineArrayProperty extends StructArrayProperty {
-  values: SplinePointProperty[]
+  values: SplinePointValue[]
 }

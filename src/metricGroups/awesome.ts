@@ -1,7 +1,7 @@
 import { MetricGroup } from './_MetricGroup'
 import { type Lookups } from '../types/lookups.type'
 import {
-  type Int32Property,
+  type Uint32Property,
   type Int64ArrayProperty,
   type SaveComponent,
   type SaveEntity,
@@ -26,7 +26,7 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
     }
 
     // Printable coupons
-    const mNumResourceSinkCoupons = (object?.properties?.mNumResourceSinkCoupons as Int32Property)?.value
+    const mNumResourceSinkCoupons = (object?.properties?.mNumResourceSinkCoupons as Uint32Property)?.value
     if (mNumResourceSinkCoupons) {
       metrics.getGauge('printable').set(mNumResourceSinkCoupons)
     }

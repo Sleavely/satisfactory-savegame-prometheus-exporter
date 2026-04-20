@@ -7,7 +7,7 @@ import {
 import { getDistance } from '../utils/spatialMath'
 import {
   type SplineArrayProperty,
-  type SplinePointProperty,
+  type SplinePointValue,
 } from '../types/splineArrayProperty.type'
 
 const metrics = new MetricGroup('satisfactory_savegame_trains')
@@ -40,11 +40,11 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
 
   if (object.typePath.startsWith('/Game/FactoryGame/Buildable/Factory/Train/Track')) {
     const { totalLength } = (object.properties?.mSplineData as SplineArrayProperty)?.values
-      ?.reduce<{ totalLength: number, previousPoint: SplinePointProperty | null }>(({ totalLength, previousPoint }, splinePoint) => {
+      ?.reduce<{ totalLength: number, previousPoint: SplinePointValue | null }>(({ totalLength, previousPoint }, splinePoint) => {
       return {
         totalLength: totalLength + (
           previousPoint
-            ? getDistance(previousPoint.value.properties.Location.value, splinePoint.value.properties.Location.value) / 100
+            ? getDistance(previousPoint.properties.Location.value, splinePoint.properties.Location.value) / 100
             : 0
         ),
         previousPoint: splinePoint,

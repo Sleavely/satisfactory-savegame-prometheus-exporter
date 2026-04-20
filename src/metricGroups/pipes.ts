@@ -8,7 +8,7 @@ import { getDistance } from '../utils/spatialMath'
 import { pathToBuilding } from '../staticData/staticData'
 import {
   type SplineArrayProperty,
-  type SplinePointProperty,
+  type SplinePointValue,
 } from '../types/splineArrayProperty.type'
 
 const metrics = new MetricGroup('satisfactory_savegame_pipes')
@@ -40,11 +40,11 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
     const mk = building.className.match(/mk(\d)/i)?.at(1) ?? '1'
 
     const { totalLength: pipeLength } = (object.properties?.mSplineData as SplineArrayProperty)?.values
-      ?.reduce<{ totalLength: number, previousPoint: SplinePointProperty | null }>(({ totalLength, previousPoint }, splinePoint) => {
+      ?.reduce<{ totalLength: number, previousPoint: SplinePointValue | null }>(({ totalLength, previousPoint }, splinePoint) => {
       return {
         totalLength: totalLength + (
           previousPoint
-            ? getDistance(previousPoint.value.properties.Location.value, splinePoint.value.properties.Location.value) / 100
+            ? getDistance(previousPoint.properties.Location.value, splinePoint.properties.Location.value) / 100
             : 0
         ),
         previousPoint: splinePoint,
