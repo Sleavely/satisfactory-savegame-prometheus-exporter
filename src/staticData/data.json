@@ -2957,6 +2957,57 @@
                 "b": 255,
                 "a": 0
             }
+        },
+        "BP_EquipmentDescriptorCup_C": {
+            "slug": "cup",
+            "name": "Cup",
+            "description": "Standard issue Cup for melee range.",
+            "sinkPoints": 0,
+            "className": "BP_EquipmentDescriptorCup_C",
+            "stackSize": 1,
+            "energyValue": 0.0,
+            "radioactiveDecay": 0.0,
+            "liquid": false,
+            "fluidColor": {
+                "r": 255,
+                "g": 255,
+                "b": 255,
+                "a": 0
+            }
+        },
+        "Desc_HardDrive_C": {
+            "slug": "hard-drive",
+            "name": "Hard Drive",
+            "description": "A hard drive with Ficsit data. Analyze it in the M.A.M. to salvage its contents.",
+            "sinkPoints": 0,
+            "className": "Desc_HardDrive_C",
+            "stackSize": 50,
+            "energyValue": 0.0,
+            "radioactiveDecay": 0.0,
+            "liquid": false,
+            "fluidColor": {
+                "r": 255,
+                "g": 255,
+                "b": 255,
+                "a": 0
+            }
+        },
+        "Desc_ResourceSinkCoupon_C": {
+            "slug": "ficsit-coupon",
+            "name": "FICSIT Coupon",
+            "description": "A special FICSIT bonus program Coupon, obtained through the AWESOME Sink.\r\nCan be redeemed in the AWESOME Shop for bonus milestones and rewards.",
+            "sinkPoints": 0,
+            "className": "Desc_ResourceSinkCoupon_C",
+            "stackSize": 50,
+            "energyValue": 0.0,
+            "radioactiveDecay": 0.0,
+            "liquid": false,
+            "fluidColor": {
+                "r": 255,
+                "g": 255,
+                "b": 255,
+                "a": 0
+            }
         }
     },
     "recipes": {
