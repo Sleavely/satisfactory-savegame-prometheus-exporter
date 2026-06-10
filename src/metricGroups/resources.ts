@@ -2,12 +2,16 @@ import { pathToGenerator, pathToItem, pathToMiner, pathToRecipe, pathToResourceN
 import { type Lookups } from '../types/lookups.type'
 import { MetricGroup } from './_MetricGroup'
 import {
+  type ArrayProperty,
   type BoolProperty,
   type FloatProperty,
+  type IntProperty,
+  type InventoryItemStructPropertyValue,
   isObjectProperty,
   type ObjectProperty,
   type SaveComponent,
   type SaveEntity,
+  type StructProperty,
 } from '@etothepii/satisfactory-file-parser'
 
 const metrics = new MetricGroup('satisfactory_savegame_resources')
@@ -21,13 +25,81 @@ const metrics = new MetricGroup('satisfactory_savegame_resources')
     'Creation of items per second',
     ['item'],
   )
+  .addGauge(
+    'storage_containers_total',
+    'Total items in storage containers',
+    ['item'],
+  )
+  .addGauge(
+    'storage_dimensional_total',
+    'Total items uploaded to dimensional storage',
+    ['item'],
+  )
 
-/* eslint-disable no-useless-return */
+const iterateInventory = (object: SaveComponent | SaveEntity, lookups: Lookups): Map<string, number> => {
+  const itemQuantities = new Map<string, number>()
+  const inventory = lookups.byInstance.get(object.properties?.mStorageInventory?.value?.pathName)
+  if (!inventory) throw new Error('Inventory not found: ' + object.properties?.mStorageInventory?.value?.pathName)
+  const inventoryStacks = (inventory.properties?.mInventoryStacks as ArrayProperty).values
+  for (const stack of inventoryStacks) {
+    const item = pathToItem(((stack.properties?.Item as StructProperty)?.value as InventoryItemStructPropertyValue)?.itemReference?.pathName)
+    const quantity = (stack.properties?.NumItems as IntProperty)?.value
+    if (item && quantity) {
+      if (itemQuantities.has(item.name)) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        itemQuantities.set(item.name, itemQuantities.get(item.name)! + quantity)
+      } else {
+        itemQuantities.set(item.name, quantity)
+      }
+    }
+  }
+  return itemQuantities
+}
+
 export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): void => {
+  // #region Storage
+  if (object.typePath.startsWith('/Game/FactoryGame/Buildable/Factory/Storage')) {
+    if (object.typePath === '/Game/FactoryGame/Buildable/Factory/StoragePlayer/Build_StorageIntegrated.Build_StorageIntegrated_C') {
+      // TODO: is this HUB storage? It only appears once despite having multiple players in the save.
+      return
+    }
+
+    const items = iterateInventory(object, lookups)
+    for (const [itemName, quantity] of items) {
+      metrics.getGauge('storage_containers_total').inc({ item: itemName }, quantity)
+    }
+  }
+
+  // Dimensional depot buildings have a buffer inventory for things that are waiting to be uploaded,
+  // but there's also the central storage subsystem which contains the actual cloud inventory.
+  if (object.typePath === '/Game/FactoryGame/Buildable/Factory/CentralStorage/Build_CentralStorage.Build_CentralStorage_C') {
+    // We dont include depot buffers in the "storage_containers_total" metric because they are not available for consumption yet,
+    // but if you wanted to include them, this would be how:
+    // const items = iterateInventory(object, lookups)
+    // for (const [itemName, quantity] of items) {
+    //   metrics.getGauge('storage_dimensional_total').inc({ item: itemName }, quantity)
+    // }
+  }
+  // Actual cloud inventory
+  if (object.typePath === '/Script/FactoryGame.FGCentralStorageSubsystem') {
+    const uploadedItems = (object.properties?.mStoredItems as ArrayProperty)?.values ?? []
+    for (const uploadedItem of uploadedItems) {
+      const itemPathName = (uploadedItem.properties?.ItemClass as ObjectProperty)?.value?.pathName
+      const item = pathToItem(itemPathName) || { name: itemPathName.split('.').at(-1)?.replace(/^Desc_/, '').replace(/_C$/, '') }
+      if (!pathToItem(itemPathName)) {
+        process.stderr.write(`Item name could not be resolved: ${itemPathName}\n`)
+        continue
+      }
+      metrics.getGauge('storage_dimensional_total').inc({ item: item.name }, uploadedItem.properties.Amount.value)
+    }
+  }
+  // #endregion
+
   // Don't include manually paused buildings
   const isStandby = (object?.properties?.mIsProductionPaused as BoolProperty)?.value
   if (isStandby) return
 
+  // #region Production
   if (object.properties?.mCurrentRecipe) {
     if (!isObjectProperty(object.properties.mCurrentRecipe)) return
 
@@ -53,6 +125,7 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
     }
     return
   }
+  // #endregion
 
   // #region Resource extraction
   if (object.properties?.mExtractableResource) {
@@ -125,7 +198,6 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
   }
   // #endregion
 }
-/* eslint-enable no-useless-return */
 
 export {
   metrics as resourcesMetrics,
