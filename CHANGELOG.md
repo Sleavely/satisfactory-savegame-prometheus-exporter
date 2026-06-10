@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.8.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.7.0...v2.8.0) (2026-06-10)
+
+
+### Features
+
+* storage_containers_total and storage_dimensional_total ([0d82cbb](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/0d82cbbe82937ec56fcf00a57d27d44d1ba0ba5f))
+
+
+### Bug Fixes
+
+* add missing items from [#30](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/issues/30) ([27b8600](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/27b8600393ebfa5295081f0cdbe95e325bb1d3fd))
+
 ## [2.7.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.6.0...v2.7.0) (2026-04-20)
 
 
