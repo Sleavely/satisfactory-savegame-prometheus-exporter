@@ -17,12 +17,17 @@ import {
 const metrics = new MetricGroup('satisfactory_savegame_resources')
   .addGauge(
     'consumption_per_second',
-    'Usage of items per second across all configured recipes and extractors',
+    'Usage of items per second across all configured recipes and extractors when running at 100% efficiency',
     ['item'],
   )
   .addGauge(
     'production_per_second',
-    'Creation of items per second',
+    'Creation of items per second as theoretical output of a machine when running at 100% efficiency',
+    ['item'],
+  )
+  .addSummary(
+    'production_efficiency',
+    'How efficiently the machines produces an item. Multiplying production per second with this value will result in actual production',
     ['item'],
   )
   .addGauge(
@@ -54,6 +59,26 @@ const iterateInventory = (object: SaveComponent | SaveEntity, lookups: Lookups):
     }
   }
   return itemQuantities
+}
+
+const getEfficiencyPercentage = (object: SaveComponent | SaveEntity): number => {
+  // The productivity is what takes us from "what can our factory THEORETICALLY produce"
+  // to "how much am I ACTUALLY producing", helping us discover when factories stop working.
+  // For around 300 seconds productivity is measured by having a timer covering duration,
+  // and another covering how much of that time was spent producing.
+  // Once the period is up, the mCurrentProductivity* values are moved into the mLastProductivity* values.
+  // Since the current period might have only been running for a few seconds, we combine both unless the machine is manually turned off.
+  const isStandby = (object.properties?.mIsProductionPaused as BoolProperty)?.value
+  if (isStandby) return 0
+
+  const productivityMeasurementDuration = 0 +
+  ((object.properties?.mLastProductivityMeasurementDuration as FloatProperty)?.value ?? 300) +
+  ((object.properties?.mCurrentProductivityMeasurementDuration as FloatProperty)?.value ?? 300)
+  const productivityMeasurementProduceDuration = 0 +
+    ((object.properties?.mLastProductivityMeasurementProduceDuration as FloatProperty)?.value ?? 0) +
+    ((object.properties?.mCurrentProductivityMeasurementProduceDuration as FloatProperty)?.value ?? 0)
+
+  return productivityMeasurementProduceDuration / productivityMeasurementDuration
 }
 
 export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): void => {
@@ -95,10 +120,6 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
   }
   // #endregion
 
-  // Don't include manually paused buildings
-  const isStandby = (object?.properties?.mIsProductionPaused as BoolProperty)?.value
-  if (isStandby) return
-
   // #region Production
   if (object.properties?.mCurrentRecipe) {
     if (!isObjectProperty(object.properties.mCurrentRecipe)) return
@@ -117,12 +138,23 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
 
     for (const ingredient of recipe.ingredients) {
       const item = staticData.items[ingredient.item]
-      metrics.getGauge('consumption_per_second').inc({ item: item.name }, (ingredient.amount / recipe.time) * clockSpeed)
+
+      // If the machine was working at 100% efficiency
+      const fullEfficiencyAmount = (ingredient.amount / recipe.time) * clockSpeed
+
+      metrics.getGauge('consumption_per_second').inc({ item: item.name }, fullEfficiencyAmount)
     }
+
+    const currentEfficiencyPercentage = getEfficiencyPercentage(object)
     for (const product of recipe.products) {
       const item = staticData.items[product.item]
-      metrics.getGauge('production_per_second').inc({ item: item.name }, (product.amount / recipe.time) * clockSpeed)
+
+      const fullEfficiencyAmount = (product.amount / recipe.time) * clockSpeed
+      metrics.getGauge('production_per_second').inc({ item: item.name }, fullEfficiencyAmount)
+
+      metrics.getSummary('production_efficiency').observe({ item: item.name }, currentEfficiencyPercentage)
     }
+
     return
   }
   // #endregion
@@ -140,6 +172,9 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
         (object.properties?.mPendingPotential as FloatProperty)?.value ??
         1
       metrics.getGauge('production_per_second').inc({ item: item.name }, extractionPerSecond * clockSpeed)
+
+      const currentEfficiencyPercentage = getEfficiencyPercentage(object)
+      metrics.getSummary('production_efficiency').observe({ item: item.name }, currentEfficiencyPercentage)
       return
     }
 
@@ -169,6 +204,9 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
       (object.properties?.mPendingPotential as FloatProperty)?.value ??
       1
     metrics.getGauge('production_per_second').inc({ item: item.name }, extractionPerSecond * resource.purity * clockSpeed)
+
+    const currentEfficiencyPercentage = getEfficiencyPercentage(object)
+    metrics.getSummary('production_efficiency').observe({ item: item.name }, currentEfficiencyPercentage)
   }
   // #endregion
 
