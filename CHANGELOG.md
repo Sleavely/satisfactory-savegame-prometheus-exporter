@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.8.0...v2.9.0) (2026-06-11)
+
+
+### Features
+
+* satisfactory_savegame_resources_production_efficiency ([7a7acd8](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/7a7acd895470931c8ed2c555d5aac7ac6cac7dd2))
+
 ## [2.8.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.7.0...v2.8.0) (2026-06-10)
 
 
