@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.1](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.9.0...v2.9.1) (2026-06-12)
+
+
+### Bug Fixes
+
+* gracefully skip missing inventories and unknown resource nodes ([#33](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/issues/33)) ([b3fc9d3](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/commit/b3fc9d3b4f718f49dcae9dac2ee839b1e7f65c92))
+
 ## [2.9.0](https://github.com/Sleavely/satisfactory-savegame-prometheus-exporter/compare/v2.8.0...v2.9.0) (2026-06-11)
 
 
