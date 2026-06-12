@@ -89,6 +89,8 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
       return
     }
 
+    if (!object.properties?.mStorageInventory?.value?.pathName) return
+
     const items = iterateInventory(object, lookups)
     for (const [itemName, quantity] of items) {
       metrics.getGauge('storage_containers_total').inc({ item: itemName }, quantity)
@@ -189,7 +191,10 @@ export const parser = (object: SaveComponent | SaveEntity, lookups: Lookups): vo
     // and its not readily available in the parsed entity, so we cant account for overclocking of the parent smasher
 
     const resource = pathToResourceNode((object.properties.mExtractableResource as ObjectProperty).value.pathName)
-    if (!resource) throw new Error('Resource not found: ' + (object.properties.mExtractableResource as ObjectProperty).value.pathName)
+    if (!resource) {
+      process.stderr.write(`Resource node not found in static data: ${(object.properties.mExtractableResource as ObjectProperty).value.pathName}\n`)
+      return
+    }
 
     // Oil frackers claim to extract "Desc_LiquidOilWell_C" but the actual resource is "Desc_LiquidOil_C" (Crude Oil)
     const item = staticData.items[resource.item.replace('Well_C', '_C')]
